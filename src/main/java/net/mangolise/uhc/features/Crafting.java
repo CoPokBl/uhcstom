@@ -41,8 +41,6 @@ public class Crafting implements Game.Feature<Uhc> {
     }
 
     private void invClick(@NotNull InventoryClickEvent event) {
-        Player player = event.getPlayer();
-
         if (event.getInventory() == null) {  // Player inventory
             playerInvClick(event);
             return;

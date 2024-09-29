@@ -91,9 +91,7 @@ public class Uhc extends BaseGame<Uhc.Config> {
     }
 
     public void startGame() {
-        Timer.countDown(1, i -> broadcast("&aThe game will start in &6" + i + "&a seconds!")).thenAccept(v -> {
-            internalStartGame();
-        });
+        Timer.countDown(1, i -> broadcast("&aThe game will start in &6" + i + "&a seconds!")).thenAccept(v -> internalStartGame());
     }
 
     private void internalStartGame() {

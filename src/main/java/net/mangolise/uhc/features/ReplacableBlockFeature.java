@@ -13,9 +13,8 @@ public class ReplacableBlockFeature implements Game.Feature<Game> {
     public void setup(Context<Game> context) {
         BlockManager blockManager = MinecraftServer.getBlockManager();
 
-        Block.values().stream().filter(block -> block.registry().isReplaceable()).forEach(block -> {
-            blockManager.registerBlockPlacementRule(new ReplacementPlacementRule(block));
-        });
+        Block.values().stream().filter(block -> block.registry().isReplaceable()).forEach(block ->
+                blockManager.registerBlockPlacementRule(new ReplacementPlacementRule(block)));
     }
 
     private static class ReplacementPlacementRule extends BlockPlacementRule {

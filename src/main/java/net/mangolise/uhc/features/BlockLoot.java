@@ -8,7 +8,6 @@ import net.mangolise.uhc.drops.ItemDrop;
 import net.mangolise.uhc.drops.OnOffDrop;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;

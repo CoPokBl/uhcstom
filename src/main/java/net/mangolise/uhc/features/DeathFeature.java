@@ -8,7 +8,6 @@ import net.mangolise.gamesdk.util.GameSdkUtils;
 import net.mangolise.uhc.Uhc;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
-import net.minestom.server.entity.damage.DamageType;
 import org.jetbrains.annotations.NotNull;
 
 public class DeathFeature implements Game.Feature<Uhc> {
