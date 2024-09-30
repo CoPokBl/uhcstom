@@ -10,6 +10,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -104,26 +105,36 @@ public class BlockLoot implements Game.Feature<Uhc> {
         }
     }
 
+    private void breakBlock(Instance instance, Block block, BlockVec pos) {
+        String half = block.getProperty("half");
+        if (half != null) switch (half) {
+            case "upper" -> instance.setBlock(pos.sub(0, 1, 0), Block.AIR);
+            case "lower" -> instance.setBlock(pos.add(0, 1, 0), Block.AIR);
+        }
+
+        String part = block.getProperty("part");
+        String facing = block.getProperty("facing");
+        if (part != null && facing != null) {
+            instance.setBlock(pos.add(getBedOffset(part, facing)), Block.AIR);
+        }
+
+        BlockVec abovePos = pos.add(0, 1, 0);
+        Block above = instance.getBlock(abovePos);
+        if (!above.isAir() && !above.isSolid()) {
+            breakBlock(instance, above, abovePos);
+            instance.setBlock(abovePos, Block.AIR);
+        }
+
+        dropLoot(block, pos);
+    }
+
     private void blockBreak(PlayerBlockBreakEvent event) {
         MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> {
-            Block block = event.getBlock();
-            String half = block.getProperty("half");
-            if (half != null) switch (half) {
-                case "upper" -> event.getInstance().setBlock(event.getBlockPosition().sub(0, 1, 0), Block.AIR);
-                case "lower" -> event.getInstance().setBlock(event.getBlockPosition().add(0, 1, 0), Block.AIR);
-            }
-
-            String part = block.getProperty("part");
-            String facing = block.getProperty("facing");
-            if (part != null && facing != null) {
-                event.getInstance().setBlock(event.getBlockPosition().add(getBedOffset(part, facing)), Block.AIR);
-            }
-
             if (event.isCancelled()) {
                 return;
             }
 
-            dropLoot(block, event.getBlockPosition());
+            breakBlock(event.getInstance(), event.getBlock(), event.getBlockPosition());
         });
     }
 }

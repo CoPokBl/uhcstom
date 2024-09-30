@@ -2,7 +2,6 @@ package net.copokbl.uhc.features;
 
 import net.mangolise.gamesdk.Game;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
@@ -19,12 +18,9 @@ import java.util.Set;
 
 public class FallingBlocksFeature implements Game.Feature<Game> {
     private final ItemDropper dropper;
-    private static final Set<Point> surrounding = Set.of(
-            new BlockVec(1, 0, 0), new BlockVec(-1, 0, 0),
-            new BlockVec(0, 0, 1), new BlockVec(0, 0, -1)
-    );
 
     private static final Set<Integer> FALL_BLOCKS = Set.of(
+            Block.SNOW.id(),
             Block.SAND.id(),
             Block.RED_SAND.id(),
             Block.GRAVEL.id(),
@@ -106,6 +102,10 @@ public class FallingBlocksFeature implements Game.Feature<Game> {
                 continue;
             }
 
+            if (block.isAir()) {
+                continue;
+            }
+
             Block below = instance.getBlock(neighbour.sub(0, 1, 0));
             if (isSupporting(below)) {
                 continue;
@@ -116,7 +116,7 @@ public class FallingBlocksFeature implements Game.Feature<Game> {
             fallingBlock.editEntityMeta(FallingBlockMeta.class, meta -> meta.setBlock(block));
             instance.setBlock(neighbour, Block.AIR);
             fallingBlock.setInstance(instance, neighbour.add(0.5, 0, 0.5));
-            blockUpdate(instance, neighbour);
+            MinecraftServer.getSchedulerManager().scheduleNextTick(() -> blockUpdate(instance, neighbour));
         }
     }
 }

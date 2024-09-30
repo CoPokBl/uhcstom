@@ -72,7 +72,10 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new LiquidFeature(),
                 new CombatFeature(),
                 new ScoreboardFeature(),
-                new FallingBlocksFeature((b, p) -> feature(BlockLoot.class).dropLoot(b, p))
+                new FallingBlocksFeature((b, p) -> feature(BlockLoot.class).dropLoot(b, p)),
+                new EatingFeature(),
+                new RegenerationFeature(),
+                new PacketDebugFeature()
         );
     }
 
