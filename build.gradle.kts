@@ -1,9 +1,13 @@
 plugins {
     id("java")
+    id("maven-publish")
+    id("io.github.goooler.shadow") version("8.1.7")
 }
 
+var versionStr = System.getenv("GIT_COMMIT") ?: "dev"
+
 group = "net.mangolise"
-version = "1.0-SNAPSHOT"
+version = versionStr
 
 repositories {
     mavenCentral()
@@ -25,6 +29,49 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "serbleMaven"
+            url = uri("https://maven.serble.net/snapshots/")
+            credentials {
+                username = System.getenv("SERBLE_REPO_USERNAME") ?: ""
+                password = System.getenv("SERBLE_REPO_PASSWORD") ?: ""
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("mavenGitCommit") {
+            groupId = "net.copokbl"
+            artifactId = "uhcstom"
+            version = versionStr
+            from(components["java"])
+        }
+
+        create<MavenPublication>("mavenLatest") {
+            groupId = "net.mangolise"
+            artifactId = "uhcstom"
+            version = "latest"
+            from(components["java"])
+        }
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
+}
+
+java {
+    withSourcesJar()
+}
+
+tasks.withType<Jar> {
+    manifest {
+        // Change this to your main class
+        attributes["Main-Class"] = "net.copokbl.uhc.Test"
+    }
 }
