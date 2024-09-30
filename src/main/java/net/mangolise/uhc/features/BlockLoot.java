@@ -8,6 +8,7 @@ import net.mangolise.uhc.drops.ItemDrop;
 import net.mangolise.uhc.drops.OnOffDrop;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
+import net.minestom.server.coordinate.Point;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
@@ -86,6 +87,23 @@ public class BlockLoot implements Game.Feature<Uhc> {
         };
     }
 
+    public void dropLoot(Block block, Point pos) {
+        List<ItemDrop> items = drops.get(block.id());
+        if (items == null) {
+            Material mat = block.registry().material();
+            if (mat != null) {
+                UhcUtils.drop(uhc.world(), pos.add(0.5, 0, 0.5), ItemStack.of(mat));
+            }
+            return;
+        }
+
+        for (ItemDrop drop : items) {
+            for (ItemStack stack : drop.get()) {
+                UhcUtils.drop(uhc.world(), pos.add(0.5, 0, 0.5), stack);
+            }
+        }
+    }
+
     private void blockBreak(PlayerBlockBreakEvent event) {
         MinecraftServer.getSchedulerManager().scheduleEndOfTick(() -> {
             Block block = event.getBlock();
@@ -105,20 +123,7 @@ public class BlockLoot implements Game.Feature<Uhc> {
                 return;
             }
 
-            List<ItemDrop> items = drops.get(block.id());
-            if (items == null) {
-                Material mat = block.registry().material();
-                if (mat != null) {
-                    UhcUtils.drop(uhc.world(), event.getBlockPosition().add(0.5, 0, 0.5), ItemStack.of(mat));
-                }
-                return;
-            }
-
-            for (ItemDrop drop : items) {
-                for (ItemStack stack : drop.get()) {
-                    UhcUtils.drop(uhc.world(), event.getBlockPosition().add(0.5, 0, 0.5), stack);
-                }
-            }
+            dropLoot(block, event.getBlockPosition());
         });
     }
 }

@@ -1,5 +1,8 @@
 package net.mangolise.uhc;
 
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import net.mangolise.combat.CombatConfig;
 import net.mangolise.combat.MangoCombat;
 import net.mangolise.gamesdk.BaseGame;
@@ -8,6 +11,9 @@ import net.mangolise.gamesdk.util.ChatUtil;
 import net.mangolise.gamesdk.util.GameSdkUtils;
 import net.mangolise.gamesdk.util.PerformanceTracker;
 import net.mangolise.gamesdk.util.Timer;
+import net.mangolise.uhc.state.UhcEvent;
+import net.mangolise.uhc.state.UhcState;
+import net.mangolise.uhc.state.UhcStatus;
 import net.mangolise.uhc.features.*;
 import net.mangolise.uhc.features.LiquidFeature;
 import net.minestom.server.MinecraftServer;
@@ -22,17 +28,25 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.WorldBorder;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.sound.SoundEvent;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Uhc extends BaseGame<Uhc.Config> {
+    private final CompletableFuture<Void> preShutdown = new CompletableFuture<>();
     private final Config config;
     private UhcState state = UhcState.PREGAME;
+    private final UhcStatus status = new UhcStatus();
     private final List<Player> players = new ArrayList<>();
     private Instance world;
+    private List<UhcEvent> events;
+    private long gameStartTime = -1;
 
     public Uhc(Config config) {
         super(config);
@@ -55,7 +69,10 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new ChestsFeature(),
                 new JukeboxFeature(),
                 new DropFeature(),
-                new LiquidFeature()
+                new LiquidFeature(),
+                new CombatFeature(),
+                new ScoreboardFeature(),
+                new FallingBlocksFeature((b, p) -> feature(BlockLoot.class).dropLoot(b, p))
         );
     }
 
@@ -70,18 +87,30 @@ public class Uhc extends BaseGame<Uhc.Config> {
         MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent.class, e -> e.setSpawningInstance(world));
         MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent.class, e -> playerJoin(e.getPlayer()));
 
-        state.obj().start(this);
+        events = new ArrayList<>(config.events);
 
         MangoCombat.enableGlobal(CombatConfig.create());
         PerformanceTracker.start();
+
+        state.obj().start(this);
     }
 
     public Instance world() {
         return world;
     }
 
-    private void broadcast(String message) {
+    public void broadcast(String message) {
         world.sendMessage(ChatUtil.toComponent(message));
+    }
+
+    public void broadcastTitle(@Nullable String title, @Nullable String sub) {
+        Component titleComp = title == null ? Component.text("") : ChatUtil.toComponent(title);
+        Component subComp = sub == null ? Component.text("") : ChatUtil.toComponent(sub);
+        world.showTitle(Title.title(titleComp, subComp, Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(1000), Duration.ofMillis(500))));
+    }
+
+    public void broadcastSound(SoundEvent sound) {
+        world.playSound(Sound.sound(sound, Sound.Source.PLAYER, 0.2f, 1f));
     }
 
     private void changeState(UhcState state) {
@@ -95,7 +124,7 @@ public class Uhc extends BaseGame<Uhc.Config> {
     }
 
     private void internalStartGame() {
-        changeState(UhcState.GRACE);
+        changeState(UhcState.IN_GAME);
         broadcast("&aThe game has started!");
     }
 
@@ -123,6 +152,10 @@ public class Uhc extends BaseGame<Uhc.Config> {
         world.sendMessage(ChatUtil.getDisplayName(player).append(ChatUtil.toComponent(" &7has joined the game!")));
     }
 
+    private void spectatorInit(Player player) {
+        player.setGameMode(GameMode.SPECTATOR);
+    }
+
     public void playerJoin(Player player) {
         switch (state) {
             case PREGAME -> {
@@ -133,14 +166,77 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 }
             }
 
-            case GRACE -> playerInit(player);
+            case IN_GAME -> {
+                if (!config().lateJoins) {
+                    player.sendMessage(ChatUtil.toComponent("&cThe game has already started so you have been made a spectator"));
+                    spectatorInit(player);
+                    break;
+                }
+                playerInit(player);
+            }
 
             default -> {  // Spec
                 player.sendMessage(ChatUtil.toComponent("&cThe game has already started so you have been made a spectator"));
-                player.setGameMode(GameMode.SPECTATOR);
+                spectatorInit(player);
             }
         }
     }
 
-    public record Config(int worldRadius, int minPlayers) { }
+    /**
+     * This future is called just before the server shuts down after the game is finished.
+     * This will only ever be called once.
+     */
+    public CompletableFuture<Void> preShutdown() {
+        return preShutdown;
+    }
+
+    public UhcStatus status() {
+        return status;
+    }
+
+    public UhcState state() {
+        return state;
+    }
+
+    public long gameStartTime() {
+        return gameStartTime;
+    }
+
+    public void setGameStartTime(long gameStartTime) {
+        this.gameStartTime = gameStartTime;
+    }
+
+    public List<Player> players() {
+        return players;
+    }
+
+    public void triggerEvent(UhcEvent event) {
+        event.start(this);
+        events.remove(event);
+    }
+
+    public UhcEvent getNextEvent() {
+        UhcEvent soonest = null;
+        for (UhcEvent event : events) {
+            if (soonest == null) {
+                soonest = event;
+                continue;
+            }
+
+            if (soonest.startTime().toMillis() > event.startTime().toMillis()) {
+                soonest = event;
+            }
+        }
+
+        return soonest;
+    }
+
+    /**
+     * Configuration for a UHC game.
+     * @param worldRadius The world border radius and area which player can be spawned in.
+     * @param minPlayers The minimum players required before the game can start.
+     * @param lateJoins Allow players to join after the game has started.
+     * @param events Events that will happen at specific times.
+     */
+    public record Config(int worldRadius, int minPlayers, boolean lateJoins, String ip, List<UhcEvent> events) { }
 }

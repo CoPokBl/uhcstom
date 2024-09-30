@@ -1,11 +1,11 @@
-package net.mangolise.uhc.states;
+package net.mangolise.uhc.state.states;
 
 import net.mangolise.uhc.GameState;
 import net.mangolise.uhc.Uhc;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import net.minestom.server.event.player.PlayerMoveEvent;
 
-public class PreGame extends GameState {
+public class PreGameState extends GameState {
 
     @Override
     public void start(Uhc uhc) {
