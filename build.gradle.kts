@@ -53,7 +53,7 @@ publishing {
         }
 
         create<MavenPublication>("mavenLatest") {
-            groupId = "net.mangolise"
+            groupId = "net.copokbl"
             artifactId = "uhcstom"
             version = "latest"
             from(components["java"])
