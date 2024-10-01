@@ -42,7 +42,7 @@ public class FallingBlocksFeature implements Game.Feature<Game> {
     );
 
     public interface ItemDropper {
-        void run(Block block, Point pos);
+        void run(Instance world, Block block, Point pos);
     }
 
     public FallingBlocksFeature(ItemDropper itemDropper) {
@@ -73,7 +73,7 @@ public class FallingBlocksFeature implements Game.Feature<Game> {
 
         if (!below.isSolid()) {
             // break
-            dropper.run(meta.getBlock(), entity.getPosition());
+            dropper.run(event.getInstance(), meta.getBlock(), entity.getPosition());
             entity.remove();
             return;
         }
@@ -94,7 +94,7 @@ public class FallingBlocksFeature implements Game.Feature<Game> {
         );
     }
 
-    private void blockUpdate(Instance instance, Point pos) {
+    public void blockUpdate(Instance instance, Point pos) {
         for (Point neighbour : getUpdateTargets(pos)) {
             Block block = instance.getBlock(neighbour);
 

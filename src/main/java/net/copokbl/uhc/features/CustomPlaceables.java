@@ -41,7 +41,12 @@ public class CustomPlaceables implements Game.Feature<Game> {
         Direction dir = event.getBlockFace().toDirection();
         BlockVec pos = event.getBlockPosition().add(dir.normalX(), dir.normalY(), dir.normalZ());
 
-        event.getInstance().setBlock(pos, place.block.get());
+        Block newBlock = place.block.get();
+        if (newBlock == null) {
+            throw new IllegalStateException();
+        }
+        MinecraftServer.getSchedulerManager().scheduleNextTick(() ->
+                event.getInstance().setBlock(pos, newBlock));
 
         if (place.newItem != null) {
             event.getPlayer().setItemInHand(event.getHand(), event.getPlayer().getItemInHand(event.getHand()).withMaterial(place.newItem));

@@ -72,10 +72,11 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new LiquidFeature(),
                 new CombatFeature(),
                 new ScoreboardFeature(),
-                new FallingBlocksFeature((b, p) -> feature(BlockLoot.class).dropLoot(b, p)),
+                new FallingBlocksFeature(BlockLoot::dropLoot),
                 new EatingFeature(),
                 new RegenerationFeature(),
-                new PacketDebugFeature()
+                new PacketDebugFeature(),
+                new FillBucketsFeature()
         );
     }
 
@@ -96,6 +97,11 @@ public class Uhc extends BaseGame<Uhc.Config> {
         PerformanceTracker.start();
 
         state.obj().start(this);
+    }
+
+    public void blockUpdate(Instance instance, Point pos) {
+        LiquidFeature.blockUpdate(instance, pos);
+        feature(FallingBlocksFeature.class).blockUpdate(instance, pos);
     }
 
     public Instance world() {

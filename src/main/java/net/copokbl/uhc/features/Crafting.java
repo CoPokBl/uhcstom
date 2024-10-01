@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: This code is very broken
 public class Crafting implements Game.Feature<Uhc> {
     public static final List<Integer> PINV_CRAFTING_SLOTS = List.of(37, 38, 39, 40);
     public static final int PINV_RESULT_SLOT = 36;

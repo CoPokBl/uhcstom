@@ -35,6 +35,7 @@ public class CraftingRecipes {
     private static final Set<Material> IRON = Set.of(Material.IRON_INGOT);
     private static final Set<Material> GOLD = Set.of(Material.GOLD_INGOT);
     private static final Set<Material> COBBLE = Set.of(Material.COBBLESTONE);
+    private static final Set<Material> NETHERITE = Set.of(Material.NETHERITE_INGOT);
 
     private static ItemStack i(Material mat, int amount) {
         return ItemStack.of(mat, amount);
@@ -48,55 +49,132 @@ public class CraftingRecipes {
         return List.of(Set.of(item));
     }
 
-    public static final List<CraftingRecipe> RECIPES = List.of(
-            new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS, PLANKS), 2, 2, i(Material.CRAFTING_TABLE)),
-            new ShapedRecipe(List.of(PLANKS, PLANKS), 1, 2, i(Material.STICK, 4)),
-            new UnShapedRecipe(s(Material.OAK_LOG), i(Material.OAK_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.BIRCH_LOG), i(Material.BIRCH_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.ACACIA_LOG), i(Material.ACACIA_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.CHERRY_LOG), i(Material.CHERRY_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.JUNGLE_LOG), i(Material.JUNGLE_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.DARK_OAK_LOG), i(Material.DARK_OAK_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.MANGROVE_LOG), i(Material.MANGROVE_PLANKS, 4)),
-            new UnShapedRecipe(s(Material.SPRUCE_LOG), i(Material.SPRUCE_PLANKS, 4)),
-            new UnShapedRecipe(List.of(Set.of(Material.DIRT), Set.of(Material.WHEAT_SEEDS)), i(Material.GRASS_BLOCK, 1)),
+    public static final List<CraftingRecipe> RECIPES;
 
-            new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS,
-                                     PLANKS, DIAMOND,PLANKS,
-                                     PLANKS, PLANKS ,PLANKS), 3, 3, i(Material.JUKEBOX)),
+    static {
+        RECIPES = List.of(
+                new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS, PLANKS), 2, 2, i(Material.CRAFTING_TABLE)), // Crafting
+                new ShapedRecipe(List.of(PLANKS, PLANKS), 1, 2, i(Material.STICK, 4)),  // Sticks
 
-            // Pickaxe
-            new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS,
-                                     AIR   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.WOODEN_PICKAXE)),
-            new ShapedRecipe(List.of(COBBLE, COBBLE, COBBLE,
-                                     AIR   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.STONE_PICKAXE)),
-            new ShapedRecipe(List.of(IRON, IRON, IRON,
-                                     AIR   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.IRON_PICKAXE)),
-            new ShapedRecipe(List.of(DIAMOND, DIAMOND, DIAMOND,
-                                     AIR   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.DIAMOND_PICKAXE)),
-            new ShapedRecipe(List.of(GOLD, GOLD, GOLD,
-                                     AIR   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.GOLDEN_PICKAXE)),
+                // Planks
+                new UnShapedRecipe(s(Material.OAK_LOG), i(Material.OAK_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.BIRCH_LOG), i(Material.BIRCH_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.ACACIA_LOG), i(Material.ACACIA_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.CHERRY_LOG), i(Material.CHERRY_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.JUNGLE_LOG), i(Material.JUNGLE_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.DARK_OAK_LOG), i(Material.DARK_OAK_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.MANGROVE_LOG), i(Material.MANGROVE_PLANKS, 4)),
+                new UnShapedRecipe(s(Material.SPRUCE_LOG), i(Material.SPRUCE_PLANKS, 4)),
+                new UnShapedRecipe(List.of(Set.of(Material.DIRT), Set.of(Material.WHEAT_SEEDS)), i(Material.GRASS_BLOCK, 1)),
 
-            // Axe
-            new ShapedRecipe(List.of(PLANKS, PLANKS, AIR,
-                                     PLANKS   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.WOODEN_AXE)),
-            new ShapedRecipe(List.of(COBBLE, COBBLE, AIR,
-                                     COBBLE   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.STONE_AXE)),
-            new ShapedRecipe(List.of(IRON, IRON, AIR,
-                                     IRON   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.IRON_AXE)),
-            new ShapedRecipe(List.of(DIAMOND, DIAMOND, AIR,
-                                     DIAMOND   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.DIAMOND_AXE)),
-            new ShapedRecipe(List.of(GOLD, GOLD, AIR,
-                                     GOLD   , STICK , AIR   ,
-                                     AIR   , STICK , AIR   ), 3, 3, i(Material.GOLDEN_AXE))
-    );
+                // Jukebox
+                new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS,
+                                         PLANKS, DIAMOND, PLANKS,
+                                         PLANKS, PLANKS, PLANKS), 3, 3, i(Material.JUKEBOX)),
+
+                // Bucket
+                new ShapedRecipe(List.of(IRON, AIR, IRON,
+                                         AIR, IRON, AIR), 3, 2, i(Material.BUCKET)),
+
+                // Pickaxe
+                new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS,
+                        AIR, STICK, AIR,
+                        AIR, STICK, AIR), 3, 3, i(Material.WOODEN_PICKAXE)),
+                new ShapedRecipe(List.of(COBBLE, COBBLE, COBBLE,
+                        AIR, STICK, AIR,
+                        AIR, STICK, AIR), 3, 3, i(Material.STONE_PICKAXE)),
+                new ShapedRecipe(List.of(IRON, IRON, IRON,
+                        AIR, STICK, AIR,
+                        AIR, STICK, AIR), 3, 3, i(Material.IRON_PICKAXE)),
+                new ShapedRecipe(List.of(DIAMOND, DIAMOND, DIAMOND,
+                        AIR, STICK, AIR,
+                        AIR, STICK, AIR), 3, 3, i(Material.DIAMOND_PICKAXE)),
+                new ShapedRecipe(List.of(GOLD, GOLD, GOLD,
+                        AIR, STICK, AIR,
+                        AIR, STICK, AIR), 3, 3, i(Material.GOLDEN_PICKAXE)),
+                new ShapedRecipe(List.of(NETHERITE, NETHERITE, NETHERITE,
+                        AIR, STICK, AIR,
+                        AIR, STICK, AIR), 3, 3, i(Material.NETHERITE_PICKAXE)),
+
+                // Axe
+                new ShapedRecipe(List.of(PLANKS, PLANKS,
+                        PLANKS, STICK,
+                        AIR, STICK), 2, 3, i(Material.WOODEN_AXE)),
+                new ShapedRecipe(List.of(COBBLE, COBBLE,
+                        COBBLE, STICK,
+                        AIR, STICK), 2, 3, i(Material.STONE_AXE)),
+                new ShapedRecipe(List.of(IRON, IRON,
+                        IRON, STICK,
+                        AIR, STICK), 2, 3, i(Material.IRON_AXE)),
+                new ShapedRecipe(List.of(DIAMOND, DIAMOND,
+                        DIAMOND, STICK,
+                        AIR, STICK), 2, 3, i(Material.DIAMOND_AXE)),
+                new ShapedRecipe(List.of(GOLD, GOLD,
+                        GOLD, STICK,
+                        AIR, STICK), 2, 3, i(Material.GOLDEN_AXE)),
+                new ShapedRecipe(List.of(NETHERITE, NETHERITE,
+                        NETHERITE, STICK,
+                        AIR, STICK), 2, 3, i(Material.NETHERITE_AXE)),
+
+                // Sword
+                new ShapedRecipe(List.of(PLANKS,
+                        PLANKS,
+                        STICK), 1, 3, i(Material.WOODEN_SWORD)),
+                new ShapedRecipe(List.of(COBBLE,
+                        COBBLE,
+                        STICK), 1, 3, i(Material.STONE_SWORD)),
+                new ShapedRecipe(List.of(IRON,
+                        IRON,
+                        STICK), 1, 3, i(Material.IRON_SWORD)),
+                new ShapedRecipe(List.of(DIAMOND,
+                        DIAMOND,
+                        STICK), 1, 3, i(Material.DIAMOND_SWORD)),
+                new ShapedRecipe(List.of(GOLD,
+                        GOLD,
+                        STICK), 1, 3, i(Material.GOLDEN_SWORD)),
+                new ShapedRecipe(List.of(NETHERITE,
+                        NETHERITE,
+                        STICK), 1, 3, i(Material.NETHERITE_SWORD)),
+
+                // Shovel
+                new ShapedRecipe(List.of(PLANKS,
+                        STICK,
+                        STICK), 1, 3, i(Material.WOODEN_SHOVEL)),
+                new ShapedRecipe(List.of(COBBLE,
+                        STICK,
+                        STICK), 1, 3, i(Material.STONE_SHOVEL)),
+                new ShapedRecipe(List.of(IRON,
+                        STICK,
+                        STICK), 1, 3, i(Material.IRON_SHOVEL)),
+                new ShapedRecipe(List.of(DIAMOND,
+                        STICK,
+                        STICK), 1, 3, i(Material.DIAMOND_SHOVEL)),
+                new ShapedRecipe(List.of(GOLD,
+                        STICK,
+                        STICK), 1, 3, i(Material.GOLDEN_SHOVEL)),
+                new ShapedRecipe(List.of(NETHERITE,
+                        STICK,
+                        STICK), 1, 3, i(Material.NETHERITE_SHOVEL)),
+
+                // Hoe
+                new ShapedRecipe(List.of(PLANKS, PLANKS,
+                        AIR, STICK,
+                        AIR, STICK), 2, 3, i(Material.WOODEN_HOE)),
+                new ShapedRecipe(List.of(COBBLE, COBBLE,
+                        AIR, STICK,
+                        AIR, STICK), 2, 3, i(Material.STONE_HOE)),
+                new ShapedRecipe(List.of(IRON, IRON,
+                        IRON, STICK,
+                        AIR, STICK), 2, 3, i(Material.IRON_HOE)),
+                new ShapedRecipe(List.of(DIAMOND, DIAMOND,
+                        AIR, STICK,
+                        AIR, STICK), 2, 3, i(Material.DIAMOND_HOE)),
+                new ShapedRecipe(List.of(GOLD, GOLD,
+                        AIR, STICK,
+                        AIR, STICK), 2, 3, i(Material.GOLDEN_HOE)),
+                new ShapedRecipe(List.of(NETHERITE, NETHERITE,
+                        AIR, STICK,
+                        AIR, STICK), 2, 3, i(Material.NETHERITE_HOE))
+                );
+    }
 }

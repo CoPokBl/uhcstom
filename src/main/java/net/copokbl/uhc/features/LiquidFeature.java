@@ -1,5 +1,6 @@
 package net.copokbl.uhc.features;
 
+import net.mangolise.gamesdk.BaseGame;
 import net.mangolise.gamesdk.Game;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class LiquidFeature implements Game.Feature<Game> {
+public class LiquidFeature implements Game.Feature<BaseGame<?>> {
     private static final Tag<Integer> LEVEL_TAG = Tag.Integer("liquid_level").defaultValue(8);
 
     private static final Set<Point> surrounding = Set.of(
@@ -27,7 +28,7 @@ public class LiquidFeature implements Game.Feature<Game> {
     );
 
     @Override
-    public void setup(Context<Game> context) {
+    public void setup(Context<BaseGame<?>> context) {
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, e -> blockUpdate(e.getInstance(), e.getBlockPosition()));
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockPlaceEvent.class, e -> blockUpdate(e.getInstance(), e.getBlockPosition()));
     }
@@ -43,7 +44,7 @@ public class LiquidFeature implements Game.Feature<Game> {
         );
     }
 
-    private static void blockUpdate(Instance instance, Point pos) {
+    public static void blockUpdate(Instance instance, Point pos) {
         for (Point neighbour : getSurroundingBlocks(pos)) {
             Block block = instance.getBlock(neighbour);
 
@@ -224,7 +225,11 @@ public class LiquidFeature implements Game.Feature<Game> {
 
     // Level has to be inverted for the client for some reason
     private static boolean tryPlaceBlock(Instance instance, Point pos, Block currentBlock, int level, Supplier<Block> block) {
-        if (currentBlock.isAir() || (currentBlock.compare(Block.WATER) && getLevel(currentBlock) < level)) {
+        boolean isSame = currentBlock.compare(block.get());
+        if ((!currentBlock.isSolid() && !currentBlock.isLiquid()) || (isSame && getLevel(currentBlock) < level)) {
+            if (!currentBlock.isSolid()) {
+                BlockLoot.dropLoot(instance, currentBlock, pos);
+            }
             placeBlock(instance, pos, level, block.get());
             return true;
         }

@@ -1,31 +1,30 @@
 package net.copokbl.uhc;
 
+import net.mangolise.gamesdk.util.GameSdkUtils;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.coordinate.BlockVec;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
-import net.minestom.server.entity.metadata.item.ItemEntityMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class UhcUtils {
 
+    public static BlockVec toBlockPos(Point pos) {
+        return new BlockVec(pos.blockX(), pos.blockY(), pos.blockZ());
+    }
+
+    public static void addItemOrDrop(Player player, ItemStack item) {
+        if (!player.getInventory().addItemStack(item)) drop(player.getInstance(), player.getPosition(), item);
+    }
+
     public static Entity drop(Instance world, Point pos, ItemStack stack) {
-        Entity item = new Entity(EntityType.ITEM);
-        item.editEntityMeta(ItemEntityMeta.class, e -> e.setItem(stack));
-        item.setInstance(world, new Pos(pos));
-        double x = ThreadLocalRandom.current().nextDouble();
-        double z = ThreadLocalRandom.current().nextDouble();
-        item.setVelocity(new Vec(x, 2, z).mul(2));
-        return item;
+        return GameSdkUtils.dropItemNaturally(world, pos, stack);
     }
 
     public static Set<Integer> getBlockIdsPlayerIsStandingOnAndAbove(Player p, int upAmount, boolean ignoreFeet) {

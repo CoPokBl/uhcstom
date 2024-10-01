@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 public class BlockLoot implements Game.Feature<Uhc> {
-    private Uhc uhc;
 
     private static final Map<Integer, List<ItemDrop>> drops = new HashMap<>() {{
         put(Block.SHORT_GRASS.id(), List.of(new OnOffDrop(Material.WHEAT_SEEDS, 1, 0.125f)));
@@ -58,7 +57,6 @@ public class BlockLoot implements Game.Feature<Uhc> {
 
     @Override
     public void setup(Context<Uhc> context) {
-        uhc = context.game();
         MinecraftServer.getGlobalEventHandler().addListener(PlayerBlockBreakEvent.class, this::blockBreak);
     }
 
@@ -88,19 +86,19 @@ public class BlockLoot implements Game.Feature<Uhc> {
         };
     }
 
-    public void dropLoot(Block block, Point pos) {
+    public static void dropLoot(Instance world, Block block, Point pos) {
         List<ItemDrop> items = drops.get(block.id());
         if (items == null) {
             Material mat = block.registry().material();
             if (mat != null) {
-                UhcUtils.drop(uhc.world(), pos.add(0.5, 0, 0.5), ItemStack.of(mat));
+                UhcUtils.drop(world, pos.add(0.5, 0, 0.5), ItemStack.of(mat));
             }
             return;
         }
 
         for (ItemDrop drop : items) {
             for (ItemStack stack : drop.get()) {
-                UhcUtils.drop(uhc.world(), pos.add(0.5, 0, 0.5), stack);
+                UhcUtils.drop(world, pos.add(0.5, 0, 0.5), stack);
             }
         }
     }
@@ -125,7 +123,7 @@ public class BlockLoot implements Game.Feature<Uhc> {
             instance.setBlock(abovePos, Block.AIR);
         }
 
-        dropLoot(block, pos);
+        dropLoot(instance, block, pos);
     }
 
     private void blockBreak(PlayerBlockBreakEvent event) {
