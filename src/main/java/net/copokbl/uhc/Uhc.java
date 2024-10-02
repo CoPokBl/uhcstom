@@ -68,14 +68,13 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new PlayerHeadFeature(),
                 new ChestsFeature(),
                 new JukeboxFeature(),
-                new DropFeature(),
+                new ItemDropFeature(),
                 new LiquidFeature(),
                 new CombatFeature(),
                 new ScoreboardFeature(),
                 new FallingBlocksFeature(BlockLoot::dropLoot),
                 new EatingFeature(),
                 new RegenerationFeature(),
-                new PacketDebugFeature(),
                 new FillBucketsFeature()
         );
     }
