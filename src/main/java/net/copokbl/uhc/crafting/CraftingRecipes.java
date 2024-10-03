@@ -49,6 +49,10 @@ public class CraftingRecipes {
         return List.of(Set.of(item));
     }
 
+    private static Set<Material> o(Material item) {
+        return Set.of(item);
+    }
+
     public static final List<CraftingRecipe> RECIPES;
 
     static {
@@ -65,12 +69,20 @@ public class CraftingRecipes {
                 new UnShapedRecipe(s(Material.DARK_OAK_LOG), i(Material.DARK_OAK_PLANKS, 4)),
                 new UnShapedRecipe(s(Material.MANGROVE_LOG), i(Material.MANGROVE_PLANKS, 4)),
                 new UnShapedRecipe(s(Material.SPRUCE_LOG), i(Material.SPRUCE_PLANKS, 4)),
-                new UnShapedRecipe(List.of(Set.of(Material.DIRT), Set.of(Material.WHEAT_SEEDS)), i(Material.GRASS_BLOCK, 1)),
+                new UnShapedRecipe(List.of(o(Material.DIRT), o(Material.WHEAT_SEEDS)), i(Material.GRASS_BLOCK, 1)),
 
                 // Jukebox
                 new ShapedRecipe(List.of(PLANKS, PLANKS, PLANKS,
                                          PLANKS, DIAMOND, PLANKS,
                                          PLANKS, PLANKS, PLANKS), 3, 3, i(Material.JUKEBOX)),
+
+                // Gap
+                new ShapedRecipe(List.of(GOLD, GOLD, GOLD,
+                                         GOLD, o(Material.APPLE), GOLD,
+                                         GOLD, GOLD, GOLD), 3, 3, i(Material.GOLDEN_APPLE)),
+                new ShapedRecipe(List.of(GOLD, GOLD, GOLD,
+                                         GOLD, o(Material.PLAYER_HEAD), GOLD,
+                                         GOLD, GOLD, GOLD), 3, 3, CustomItems.GOLDEN_HEAD),
 
                 // Bucket
                 new ShapedRecipe(List.of(IRON, AIR, IRON,

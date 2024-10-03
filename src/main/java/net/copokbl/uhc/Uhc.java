@@ -75,7 +75,8 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new FallingBlocksFeature(BlockLoot::dropLoot),
                 new EatingFeature(),
                 new RegenerationFeature(),
-                new FillBucketsFeature()
+                new FillBucketsFeature(),
+                new DeathFeature()
         );
     }
 
@@ -246,5 +247,5 @@ public class Uhc extends BaseGame<Uhc.Config> {
      * @param lateJoins Allow players to join after the game has started.
      * @param events Events that will happen at specific times.
      */
-    public record Config(int worldRadius, int minPlayers, boolean lateJoins, String ip, List<UhcEvent> events) { }
+    public record Config(int worldRadius, int minPlayers, boolean lateJoins, boolean deathLightning, String ip, List<UhcEvent> events) { }
 }

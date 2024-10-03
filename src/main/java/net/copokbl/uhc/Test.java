@@ -28,7 +28,7 @@ public class Test {
             e.getPlayer().addPermission(new Permission("*"));
         });
 
-        Uhc uhc = new Uhc(new Uhc.Config(500, 1, true, "uhcstom", List.of(
+        Uhc uhc = new Uhc(new Uhc.Config(500, 1, true, true, "uhcstom", List.of(
                 new PvPEvent(Duration.ofSeconds(20))
         )));
         uhc.setup();

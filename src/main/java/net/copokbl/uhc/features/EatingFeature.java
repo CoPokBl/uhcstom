@@ -62,6 +62,9 @@ public class EatingFeature implements Game.Feature<Game> {
         if (material.equals(Material.GOLDEN_APPLE)) {
             event.getPlayer().addEffect(new Potion(PotionEffect.REGENERATION, (byte) 0, 20 * 5));
             event.getPlayer().addEffect(new Potion(PotionEffect.ABSORPTION, (byte) 0, 20 * 60 * 2));
+        } else if (material.equals(Material.PLAYER_HEAD)) {
+            event.getPlayer().addEffect(new Potion(PotionEffect.REGENERATION, (byte) 3, 20 * 4));
+            event.getPlayer().addEffect(new Potion(PotionEffect.SPEED, (byte) 1, 20 * 8));
         }
     }
 }
