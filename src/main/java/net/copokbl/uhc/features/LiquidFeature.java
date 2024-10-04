@@ -115,8 +115,11 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
     }
 
     private static class LiquidSourceHandler extends LiquidHandler {
+        private final int movementCost;
+
         public LiquidSourceHandler(Block block, int flowSpeed, boolean canInfinite) {
             super(block, flowSpeed, canInfinite);
+            movementCost = block.compare(Block.LAVA) ? 2 : 1;
         }
 
         @Override
@@ -129,18 +132,21 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
 
             for (Point pos : surrounding) {
                 pos = blockPos.add(pos);
-                tryPlaceBlock(instance, pos, 7, () -> block.withTag(FALLING_TAG, false)
+                tryPlaceBlock(instance, pos, 8 - movementCost, () -> block.withTag(FALLING_TAG, false)
                         .withHandler(new LiquidFlowHandler(block, flowSpeed, canInfinite)));
             }
 
-            tryPlaceBlock(instance, blockPos.sub(0, 1, 0), 7, () -> block.withTag(FALLING_TAG, true)
+            tryPlaceBlock(instance, blockPos.sub(0, 1, 0), 8 - movementCost, () -> block.withTag(FALLING_TAG, true)
                     .withHandler(new LiquidFlowHandler(block, flowSpeed, canInfinite)));
         }
     }
 
     private static class LiquidFlowHandler extends LiquidHandler {
+        private final int movementCost;
+
         public LiquidFlowHandler(Block block, int flowSpeed, boolean canInfinite) {
             super(block, flowSpeed, canInfinite);
+            movementCost = block.compare(Block.LAVA) ? 2 : 1;
         }
 
         @Override
@@ -155,17 +161,17 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
             boolean falling = block.getTag(FALLING_TAG);
 
             // check if there is a water block for this water to come from
-            if (falling ? !hasUpSupportingBlock(instance, blockPos) : horizSupportingBlockCount(instance, blockPos, level) == 0) {
-                if (falling || level == 1) {
+            if (falling ? !hasUpSupportingBlock(instance, blockPos) : horizSupportingBlockCount(instance, blockPos, level, movementCost) == 0) {
+                if (falling || level == movementCost) {
                     instance.setBlock(blockPos, Block.AIR);
                 } else {
-                    placeBlock(instance, blockPos, level - 1, block.withHandler(this));
+                    placeBlock(instance, blockPos, level - movementCost, block.withHandler(this));
                 }
                 return;
             }
 
             // if there are 2 nearby source blocks, this become s a source block
-            if (!falling && canInfinite && horizSupportingBlockCount(instance, blockPos, 7) >= 2) {
+            if (!falling && canInfinite && horizSupportingBlockCount(instance, blockPos, 7, movementCost) >= 2) {
                 placeBlock(instance, blockPos, 8, block.withHandler(new LiquidSourceHandler(block, flowSpeed, canInfinite)));
             }
 
@@ -177,14 +183,14 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
                 return;
             }
 
-            if (tryPlaceBlock(instance, belowPos, belowBlock, 7, () -> block.withTag(FALLING_TAG, true)
+            if (tryPlaceBlock(instance, belowPos, belowBlock, 8 - movementCost, () -> block.withTag(FALLING_TAG, true)
                     .withHandler(new LiquidFlowHandler(block, flowSpeed, canInfinite)))) {
                 return;
             }
 
             // if not, then go horizontally
-            if (level > 1) {
-                level--;
+            if (level > movementCost) {
+                level -= movementCost;
                 for (Point pos : surrounding) {
                     pos = blockPos.add(pos);
                     tryPlaceBlock(instance, pos, level, () -> block.withTag(FALLING_TAG, false)
@@ -193,7 +199,7 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
             }
         }
 
-        private int horizSupportingBlockCount(Instance instance, Point blockPos, int level) {
+        private int horizSupportingBlockCount(Instance instance, Point blockPos, int level, int moveCost) {
             int count = 0;
 
             for (Point pos : surrounding) {
@@ -204,7 +210,7 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
                 }
 
                 int nLevel = getLevel(neighbor);
-                if (nLevel == level + 1) {
+                if (nLevel == level + moveCost) {
                     count++;
                 }
             }
@@ -242,6 +248,9 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
             return;
         }
 
+        if (level > 8 || level < 0) {
+            throw new AssertionError("Requires: 0 <= level <= 8");
+        }
         instance.setBlock(pos, block.withTag(LEVEL_TAG, level).withProperty("level", String.valueOf(8-level)));
         blockUpdate(instance, pos);
     }

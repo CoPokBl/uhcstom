@@ -76,7 +76,9 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new EatingFeature(),
                 new RegenerationFeature(),
                 new FillBucketsFeature(),
-                new DeathFeature()
+                new DeathFeature(),
+                new LavaHurtFeature(),
+                new FireFeature()
         );
     }
 

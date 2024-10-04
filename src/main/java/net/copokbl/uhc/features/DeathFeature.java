@@ -2,6 +2,7 @@ package net.copokbl.uhc.features;
 
 import net.copokbl.uhc.UhcUtils;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.mangolise.combat.events.PlayerKilledEvent;
 import net.mangolise.gamesdk.Game;
 import net.mangolise.gamesdk.util.ChatUtil;
@@ -48,7 +49,8 @@ public class DeathFeature implements Game.Feature<Uhc> {
             UhcUtils.drop(player.getInstance(), player.getPosition(), item);
         }
 
-        ItemStack head = ItemStack.of(Material.PLAYER_HEAD);
+        ItemStack head = ItemStack.of(Material.PLAYER_HEAD)
+                .withCustomName(Component.text(player.getUsername() + "'s head").decoration(TextDecoration.ITALIC, false));
         PlayerSkin skin = player.getSkin();
         if (skin != null) {
             head = head.with(ItemComponent.PROFILE, new HeadProfile(player.getSkin()));
