@@ -234,7 +234,7 @@ public class LiquidFeature implements Game.Feature<BaseGame<?>> {
         boolean isSame = currentBlock.compare(block.get());
         if ((!currentBlock.isSolid() && !currentBlock.isLiquid()) || (isSame && getLevel(currentBlock) < level)) {
             if (!currentBlock.isSolid()) {
-                BlockLoot.dropLoot(instance, currentBlock, pos);
+                BlockLootFeature.dropLoot(instance, currentBlock, pos);
             }
             placeBlock(instance, pos, level, block.get());
             return true;

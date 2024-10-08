@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlockLoot implements Game.Feature<Uhc> {
+public class BlockLootFeature implements Game.Feature<Uhc> {
 
     private static final Map<Integer, List<ItemDrop>> drops = new HashMap<>() {{
         put(Block.SHORT_GRASS.id(), List.of(new OnOffDrop(Material.WHEAT_SEEDS, 1, 0.125f)));

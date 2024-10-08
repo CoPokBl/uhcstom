@@ -56,13 +56,13 @@ public class Uhc extends BaseGame<Uhc.Config> {
     @Override
     public List<Feature<?>> features() {
         return List.of(
-                new BlockLoot(),
+                new BlockLootFeature(),
                 new ItemPickupFeature(),
-                new Crafting(),
+                new CraftingFeature(),
                 new DoorFeature(),
                 new AdminCommandsFeature(),
                 new ReplacableBlockFeature(),
-                new FallDamage(),
+                new FallDamageFeature(),
                 new CustomPlaceables(),
                 new SignFeature(),
                 new PlayerHeadFeature(),
@@ -72,7 +72,7 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new LiquidFeature(),
                 new CombatFeature(),
                 new ScoreboardFeature(),
-                new FallingBlocksFeature(BlockLoot::dropLoot),
+                new FallingBlocksFeature(BlockLootFeature::dropLoot),
                 new EatingFeature(),
                 new RegenerationFeature(),
                 new FillBucketsFeature(),

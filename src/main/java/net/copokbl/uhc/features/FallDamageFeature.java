@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public class FallDamage implements Game.Feature<Game> {
+public class FallDamageFeature implements Game.Feature<Game> {
     private static final Tag<Double> FALL_DISTANCE_TAG = Tag.Double("fall_distance").defaultValue(0D);
     private static final Set<Integer> NO_FALL_DAMAGE_BLOCKS = Set.of(
             Block.WATER.id(),

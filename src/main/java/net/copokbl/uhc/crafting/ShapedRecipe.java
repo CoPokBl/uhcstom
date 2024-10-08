@@ -3,6 +3,7 @@ package net.copokbl.uhc.crafting;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,23 +25,71 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     @Override
-    public boolean canCraft(List<Material> slots) {
-        attempt: for (int x = 0; x < 4-width; x++) {
-            for (int y = 0; y < 4-height; y++) {
-                for (int i = 0; i < shape.size(); i++) {
-                    Set<Material> check = shape.get(i);
-                    int slot = (i % width + x) + ((i / width + y) * 3);
+    public boolean canCraft(final List<Material> slots) {
+        if (slots.stream().allMatch(m -> m.equals(Material.AIR))) {
+            return false;
+        }
 
-                    if (!check.contains(slots.get(slot))) {
-                        continue attempt;
+        List<Material> modSlots = new ArrayList<>(slots);
+        int dimension = (int) Math.sqrt(modSlots.size());   // Get the side length of the square
+        int w = dimension;
+        int h = dimension;
+
+        // Remove empty rows
+        {
+            int row = 0;
+            rowsIter: while (row < h) {
+                for (int col = 0; col < w; col++) {
+                    int slot = (row * w) + col;
+                    if (!modSlots.get(slot).equals(Material.AIR)) {
+                        row++;
+                        continue rowsIter;
                     }
                 }
 
-                return true;
+                // Remove row
+                for (int i = 0; i < w; i++) {
+                    modSlots.remove(row * w);
+                }
+                h--;
             }
         }
 
-        return false;
+        // Remove empty column
+        {
+            int col = 0;
+            colIter: while (col < w) {
+                for (int row = 0; row < h; row++) {
+                    int slot = (row * w) + col;
+                    if (!modSlots.get(slot).equals(Material.AIR)) {
+                        col++;
+                        continue colIter;
+                    }
+                }
+
+                // Remove column
+                for (int i = 0; i < h; i++) {
+                    try {
+                        modSlots.remove((i * w) + col - i);
+                    } catch (RuntimeException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                w--;
+            }
+        }
+
+        if (modSlots.size() != shape.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < modSlots.size(); i++) {
+            if (!shape.get(i).contains(modSlots.get(i))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
