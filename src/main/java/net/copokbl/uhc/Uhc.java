@@ -1,5 +1,6 @@
 package net.copokbl.uhc;
 
+import net.copokbl.uhc.crafting.CraftingRecipes;
 import net.copokbl.uhc.features.*;
 import net.copokbl.uhc.features.LiquidFeature;
 import net.kyori.adventure.sound.Sound;
@@ -58,7 +59,7 @@ public class Uhc extends BaseGame<Uhc.Config> {
         return List.of(
                 new BlockLootFeature(),
                 new ItemPickupFeature(),
-                new CraftingFeature(),
+                new CraftingFeature(CraftingRecipes.RECIPES),
                 new DoorFeature(),
                 new AdminCommandsFeature(),
                 new ReplacableBlockFeature(),

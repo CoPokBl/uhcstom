@@ -1,5 +1,8 @@
 package net.copokbl.uhc.crafting;
 
+import net.mangolise.gamesdk.features.crafting.CraftingRecipe;
+import net.mangolise.gamesdk.features.crafting.ShapedRecipe;
+import net.mangolise.gamesdk.features.crafting.UnShapedRecipe;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
