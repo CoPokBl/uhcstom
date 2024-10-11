@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class CustomPlaceables implements Game.Feature<Game> {
+public class CustomPlaceablesFeatures implements Game.Feature<Game> {
     private static final Map<Material, PlacementRule> PLACEABLES = new HashMap<>() {{
         put(Material.FLINT_AND_STEEL, new PlacementRule(() -> Block.FIRE));
         put(Material.WATER_BUCKET, new PlacementRule(LiquidFeature::getWater, Material.BUCKET));

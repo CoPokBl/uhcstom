@@ -64,7 +64,7 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new AdminCommandsFeature(),
                 new ReplacableBlockFeature(),
                 new FallDamageFeature(),
-                new CustomPlaceables(),
+                new CustomPlaceablesFeatures(),
                 new SignFeature(),
                 new PlayerHeadFeature(),
                 new ChestsFeature(),
@@ -79,7 +79,8 @@ public class Uhc extends BaseGame<Uhc.Config> {
                 new FillBucketsFeature(),
                 new DeathFeature(),
                 new LavaHurtFeature(),
-                new FireFeature()
+                new FireFeature(),
+                new PlayerDataSaveFeature()
         );
     }
 
